@@ -1,0 +1,28 @@
+version: '3.3'
+services:
+  node1:
+    build: 
+      context: ./app
+      args:
+        - port=5000
+        - C_NAME=node1
+    ports:
+      - "4001:5000"
+
+  node2:
+    build: 
+      context: ./app
+      args:
+        - port=5000
+        - C_NAME=node2
+    ports:
+      - "4002:5000"
+
+  node3:
+    build: 
+      context: ./app
+      args:
+        - port=5000
+        - C_NAME=node3
+    ports:
+      - "4003:5000"

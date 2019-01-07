@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Notifications</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+</head>
+<body>
+<h1 align="center" style="background-color:DodgerBlue;">Distributed Systems Project 2</h1><h3 align="center" style="background-color:DodgerBlue;">Phase 2 : A Centralized Pub/Sub System Running in Docker Container</h3>
+    <h4 align="center";">Subscribers will be notified and can Read Messages from Publishers on this Page</h4>
+	<h6 align="right";">Developed By Karan Manchandia (karanman)<br/> Sai Saket Regulapati (saisaket)</h6>
+	<table id="notifications">
+		<thead>
+			<tr>
+				<td>Chanel Name</td>
+				<td>Event Description</td>
+			</tr>
+		</thead>
+		<tbody>
+			
+		</tbody>
+	</table>
+</body>
+<script type="text/javascript">
+	$(function () {
+		let uuid = prompt("Enter UUID")
+		pollServer()
+		function pollServer(){
+	        $.ajax({ // this is a json object inside the function
+	        	type: "GET",
+				data: {
+					uuid: uuid
+				},
+	            url: '/notify',
+	            data: {
+	            	uuid: uuid
+	            },
+	            async: false,
+	            success: function(data){
+	                table = $("#notifications tbody").empty()
+
+
+	                data.forEach(function (item) {
+	                	row = $("<tr />").appendTo(table)
+	                	
+		                $("<td />",{
+		                	text: item[1]
+		                }).appendTo(row)
+
+		                $("<td />",{
+		                	text: item[0]
+		                }).appendTo(row)
+	                })
+
+	            },
+	            error: function(){
+	                console.log('Could not get Data from Database');
+	            },
+	            complete: function(){
+					setTimeout(pollServer, 1000);
+				}
+	        })
+	    }
+	})
+
+</script>
+</html>

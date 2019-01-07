@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>Creat Event</title>
+	<h1 align="center" style="background-color:DodgerBlue;">Distributed Systems Project 2</h1><h3 align="center" style="background-color:DodgerBlue;">Phase 2 : A Centralized Pub/Sub System Running in Docker Container</h3><h6 align="right";">Developed By Karan Manchandia (karanman)<br/> Sai Saket Regulapati (saisaket)</h6>
+    <h5 align="left";">Load your channel and create a new Event on this page</h5>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+</head>
+<body>
+	<label>Enter User ID to load your channels</label>
+	<input type="text" id="uuid"> 
+	<button id="loader">Load</button>
+
+	<table id="my_chanels">
+		<thead>
+			<tr>
+				<td>Name</td>
+				<td>Action</td>
+			</tr>
+		</thead>
+		<tbody>
+			
+		</tbody>
+	</table>
+	<div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title">New Event</h4>
+	      </div>
+		  <div class="modal-body">
+	        <form id="new_event_form">
+	          <input type="hidden" id="chanel_id">
+	          <div class="form-group">
+	            <label for="message-text" class="control-label">Event Data:</label>
+	            <textarea class="form-control" id="message-text"></textarea>
+	          </div>
+	        </form>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        <button type="button" class="btn btn-primary" id="save_event">Save changes</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+</body>
+<script type="text/javascript">
+	$(function () {
+		$("#save_event").on('click', function (event) {
+			form = $('#new_event_form')
+
+			console.log(form)
+
+			chanel_id = $('#chanel_id').val()
+
+			event_description = $('.form-group textarea').val()
+
+			console.log(event_description)
+
+			$.ajax({
+				url: '/create_event',
+				method: 'POST',
+				data: {
+					chanel_id: chanel_id,
+					event_description: event_description
+				},
+				success: function (result) {
+					console.log(result)
+				}
+			})
+		})
+		$('#myModal').on('show.bs.modal', function (event) {
+			var button = $(event.relatedTarget) // Button that triggered the modal
+			var chanel_id = button.data('chanel_id') // Extract info from data-* attributes
+			var modal = $(this)
+			modal.find('.modal-body input').val(chanel_id)
+		})
+		$("#loader").on('click', function (event) {	
+
+			$.ajax({
+				type: "GET",
+				data: {
+					uuid: $("#uuid")[0].value
+				},
+				url: "/my_chanels",
+				success: (result) => {
+					
+					table_body = $("#my_chanels tbody").empty()
+
+					result.forEach(function (item) {
+						row = $("<tr />").appendTo(table_body)
+
+						$("<td />", {
+							text: item[1]
+						}).appendTo(row)
+
+						last = $("<td />").appendTo(row)
+
+						$("<button />", {
+							'text': "New Event",
+							'class': "btn btn-primary",
+							'data-toggle': "modal",
+							'data-target': "#myModal",
+							'data-chanel_id': item[0]
+						})
+						.appendTo(last)
+					})
+
+				}
+			})
+		})
+	})
+</script>
+</html>

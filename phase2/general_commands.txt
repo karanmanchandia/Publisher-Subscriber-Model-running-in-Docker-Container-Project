@@ -1,0 +1,12 @@
+Stop a docker container
+docker stop (container ID)
+
+remove docker container
+docker rm (container ID)
+
+show all docker containers running and stopped
+docker ps -a
+
+restart a docker container
+docker restart (container id)
+

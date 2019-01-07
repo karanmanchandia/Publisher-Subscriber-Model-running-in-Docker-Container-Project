@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>All adverts</title>
+	<h1 align="center" style="background-color:DodgerBlue;">Distributed Systems Project 2</h1><h3 align="center" style="background-color:DodgerBlue;">Phase 2 : A Centralized Pub/Sub System Running in Docker Container</h3>
+    <h4 align="Center";">Subscribe to an event on this page</h4>
+	<h6 align="right";">Developed By Karan Manchandia (karanman)<br/> Sai Saket Regulapati (saisaket)</h6>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+</head>
+<body>
+	<label>Enter your client User ID</label>
+	<input type="text" id="uuid">
+	<table id="chanels">
+		<thead>
+			<tr>
+				<td>Chanel Name</td>
+				<td>Chanel Owner</td>
+				<td>Action</td>
+			</tr>
+		</thead>
+		<tbody>
+
+			
+		</tbody>
+	</table>
+</body>
+<script type="text/javascript">
+	$(function () {
+		$.ajax({
+			url: '/adverts',
+			success: function (result) {
+				console.log(result)
+				table_body = $('#chanels tbody');
+
+				for (var i = result.length - 1; i >= 0; i--) {
+					item = result[i]
+					row = $("<tr />").appendTo(table_body)
+
+					$("<td />",{
+						text: item[1]
+					}).appendTo(row)
+
+					$("<td />",{
+						text: item[2]
+					}).appendTo(row)
+
+					last = $("<td />").appendTo(row)
+
+					$("<a />", {
+						href: "#",
+						text: "Subscribe"
+					})
+					.data('chanel_id', item[0])
+					.click(function (event) {
+
+						chanel_id = $(event.target).data('chanel_id')
+						uuid = $("#uuid")[0].value
+
+						$.ajax({
+							url: '/subscribe',
+							contentType: 'application/json;charset=UTF-8',
+							data: JSON.stringify({
+								chanel_id: chanel_id,
+								uuid: uuid
+							}),
+							method: "POST",
+							success: function (result) {
+								console.log(result)
+							}
+						})
+					})
+					.appendTo(last)
+				}
+			},
+			error: function (argument) {
+				console.log(argument)
+			}
+		})
+	})
+</script>
+</html>
